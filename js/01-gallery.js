@@ -16,28 +16,28 @@ const markup = galleryItems.map(({ preview, original, description }) =>
 
 galleryList.insertAdjacentHTML('beforeend', markup);
 
-galleryList.addEventListener("click", showOriginalImg);
-function showOriginalImg(evt) {
-    evt.preventDefault();
-    if (!evt.target.classList.contains("gallery__image")) {
+galleryList.onclick = (evt) => {
+ if (evt.target.nodeName !== 'IMG') {
         return;
     }
-    const currentImgUrl = evt.target.dataset.source;
-    
+    evt.preventDefault();
     const instance = basicLightbox.create(`
-    <img src="${currentImgUrl}" width="1280" height="auto"/>`)
-
+		<img width="1400" height="900" src="${evt.target.dataset.source}">
+	`, {
+        onShow: () => {
+            document.addEventListener('keydown', closeModal);
+        },
+        onClose: () => {
+            document.removeEventListener('keydown', closeModal);
+        },
+    });
     instance.show();
-   
-// Close img ESC
-	document.onkeydown = function(evt) {
-		evt = evt || document.event;
-		var isEscape = false;
-		if ( "key" in evt ) {
-			isEscape = evt.key === "Escape";
-		} 
-		if ( isEscape ) {
-			instance.close();
-		}
-	};  
+    
+        function closeModal(evt) {
+       if (evt.code !== 'Escape') {
+           return;
+       } 
+            instance.close();
+    }
+
 }
